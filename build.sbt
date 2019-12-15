@@ -17,9 +17,9 @@
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    organization in ThisBuild := "com.github.mkroli.sbt.schemaregistry",
+    organization := "com.github.mkroli.sbt.schemaregistry",
     organizationName in ThisBuild := "Michael Krolikowski",
-    name in ThisBuild := "sbt-schemaregistry",
+    name := "sbt-schemaregistry",
     startYear in ThisBuild := Some(2019),
     sbtPlugin := true,
     scalaVersion := appConfiguration.value.provider.scalaProvider.version,
