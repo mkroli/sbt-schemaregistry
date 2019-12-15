@@ -34,6 +34,6 @@ lazy val root = (project in file("."))
         "scm:git:git@github.com:mkroli/sbt-schemaregistry.git"
       )
     ),
-    releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    releasePublishArtifactsAction := releaseStepCommand("^publishSigned"),
     addSbtPlugin("com.cavorite" % "sbt-avro-1-9" % "1.1.7")
   )
