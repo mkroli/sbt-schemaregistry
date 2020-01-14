@@ -17,6 +17,7 @@
 package com.github.mkroli.sbt.schemaregistry
 
 import java.net.URLEncoder
+import java.nio.file.Path
 
 import sbt.Keys._
 import sbt._
@@ -27,8 +28,11 @@ object SchemaRegistryPlugin extends AutoPlugin {
 
   object autoImport {
     val schemaRegistryUrl = settingKey[String]("URL of the SchemaRegistry")
-    val schemaRegistrySubjects = settingKey[Seq[String]]("Full subject names of the required schemas")
-    val schemaRegistryFetch = taskKey[Seq[File]]("Fetches all schemas to project")
+    val schemaRegistrySubjects =
+      settingKey[Seq[String]]("Full subject names of the required schemas")
+    val outputPath = settingKey[Path]("Output directory for generated schemas")
+    val schemaRegistryFetch =
+      taskKey[Seq[File]]("Fetches all schemas to project")
   }
 
   import SbtAvro.autoImport._
@@ -37,13 +41,16 @@ object SchemaRegistryPlugin extends AutoPlugin {
   lazy val baseSchemaRegistrySettings: Seq[Def.Setting[_]] = Seq(
     schemaRegistryUrl := "http://localhost:8081",
     schemaRegistrySubjects := Seq.empty,
-    resourceManaged in schemaRegistryFetch := resourceManaged.value / "schemaregistry",
+    resourceManaged in schemaRegistryFetch := resourceManaged.value.toPath
+      .resolve(outputPath.value)
+      .toFile,
     schemaRegistryFetch := schemaRegistryFetchTask.value,
     sourceDirectory := (resourceManaged in schemaRegistryFetch).value,
     generate := generate.dependsOn(schemaRegistryFetch).value
   )
 
-  override lazy val projectSettings = inConfig(AvroConfig)(baseSchemaRegistrySettings)
+  override lazy val projectSettings =
+    inConfig(AvroConfig)(baseSchemaRegistrySettings)
 
   override def requires = JvmPlugin && SbtAvro
 
@@ -53,7 +60,8 @@ object SchemaRegistryPlugin extends AutoPlugin {
     schemaRegistrySubjects.value.map { subject =>
       val output = (resourceManaged in schemaRegistryFetch).value / s"${subject}.avsc"
       if (!output.exists) {
-        val url = s"${schemaRegistryUrl.value}/subjects/${URLEncoder.encode(subject, "UTF-8")}/versions/latest/schema"
+        val url =
+          s"${schemaRegistryUrl.value}/subjects/${URLEncoder.encode(subject, "UTF-8")}/versions/latest/schema"
         sLog.value.info(s"Fetching ${url}")
         val schema = new URL(url).openStream()
         try {
