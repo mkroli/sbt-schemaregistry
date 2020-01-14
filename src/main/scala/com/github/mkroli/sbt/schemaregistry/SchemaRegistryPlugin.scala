@@ -18,6 +18,7 @@ package com.github.mkroli.sbt.schemaregistry
 
 import java.net.URLEncoder
 import java.nio.file.Path
+import java.nio.file.Paths
 
 import sbt.Keys._
 import sbt._
@@ -30,7 +31,8 @@ object SchemaRegistryPlugin extends AutoPlugin {
     val schemaRegistryUrl = settingKey[String]("URL of the SchemaRegistry")
     val schemaRegistrySubjects =
       settingKey[Seq[String]]("Full subject names of the required schemas")
-    val outputPath = settingKey[Path]("Output directory for generated schemas")
+    val outputPath =
+      settingKey[Path]("Output directory for generated schemas") ?
     val schemaRegistryFetch =
       taskKey[Seq[File]]("Fetches all schemas to project")
   }
@@ -42,7 +44,7 @@ object SchemaRegistryPlugin extends AutoPlugin {
     schemaRegistryUrl := "http://localhost:8081",
     schemaRegistrySubjects := Seq.empty,
     resourceManaged in schemaRegistryFetch := resourceManaged.value.toPath
-      .resolve(outputPath.value)
+      .resolve(outputPath.value.getOrElse(Paths.get("schemaregistry")))
       .toFile,
     schemaRegistryFetch := schemaRegistryFetchTask.value,
     sourceDirectory := (resourceManaged in schemaRegistryFetch).value,
