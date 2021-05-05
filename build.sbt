@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import ReleaseTransformations._
+
 lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
-    organization := "com.github.mkroli.sbt.schemaregistry",
+    organization := "com.github.mkroli",
     ThisBuild / organizationName := "Michael Krolikowski",
     name := "sbt-schemaregistry",
     ThisBuild / startYear  := Some(2019),
@@ -44,6 +46,19 @@ lazy val root = (project in file("."))
         url = url("https://github.com/mkroli")
       )
     ),
-    releasePublishArtifactsAction := releaseStepCommand("^publishSigned"),
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      releaseStepCommandAndRemaining("^publishSigned"),
+      releaseStepCommand("sonatypeBundleRelease"),
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
+    ),
     addSbtPlugin("com.cavorite" % "sbt-avro-1-9" % "1.1.7")
   )
