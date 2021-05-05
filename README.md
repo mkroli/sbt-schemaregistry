@@ -14,9 +14,7 @@ Add the plugin according to [sbt-documentation](https://www.scala-sbt.org/1.x/do
 For instance, add the following lines to the file ```project/plugins.sbt``` in your project directory:
 
 ```sbt
-resolvers += Resolver.bintrayIvyRepo("mkroli", "sbt-plugins")
-
-addSbtPlugin("com.github.mkroli.sbt.schemaregistry" % "sbt-schemaregistry" % "0.1")
+addSbtPlugin("com.github.mkroli" % "sbt-schemaregistry" % "0.3")
 ```
 
 ### Settings
