@@ -18,20 +18,30 @@ lazy val root = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
     organization := "com.github.mkroli.sbt.schemaregistry",
-    organizationName in ThisBuild := "Michael Krolikowski",
+    ThisBuild / organizationName := "Michael Krolikowski",
     name := "sbt-schemaregistry",
-    startYear in ThisBuild := Some(2019),
+    ThisBuild / startYear  := Some(2019),
     sbtPlugin := true,
     scalaVersion := appConfiguration.value.provider.scalaProvider.version,
-    crossSbtVersions := Seq("0.13.18", "1.3.5"),
-    publishMavenStyle := false,
-    bintrayPackage := name.value,
+    crossSbtVersions := Seq("0.13.18", "1.5.1"),
+    publishMavenStyle := true,
+    publishTo := sonatypePublishToBundle.value,
+    sonatypeCredentialHost := "s01.oss.sonatype.org",
+    sonatypeRepository := "https://s01.oss.sonatype.org/service/local",
     licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-    resolvers += "bintray" at "https://api.bintray.com/maven/mkroli/maven/sbt-schemaregistry",
+    homepage := Some(url("https://github.com/mkroli/dns4s")),
     scmInfo := Some(
       ScmInfo(
         url("https://github.com/mkroli/sbt-schemaregistry"),
         "scm:git:git@github.com:mkroli/sbt-schemaregistry.git"
+      )
+    ),
+    developers := List(
+      Developer(
+        id = "mkroli",
+        name = "Michael Krolikowski",
+        email = "mkroli@yahoo.de",
+        url = url("https://github.com/mkroli")
       )
     ),
     releasePublishArtifactsAction := releaseStepCommand("^publishSigned"),
